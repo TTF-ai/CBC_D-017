@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exercise Posture Analysis</title>
+<style>
+  /* Embedded CSS for layout and styling */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #e6f0fa;
+    color: #1a1a2e;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #cce0ffcc;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px #5a8ddf88;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #007acc;
+  }
+  main {
+    flex-grow: 1;
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .left-side, .right-side {
+    background: #cce0ff;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #5a8ddf88;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .left-side {
+    flex: 1;
+    min-width: 300px;
+  }
+  .right-side {
+    flex: 1;
+    min-width: 300px;
+  }
+  .box {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #5a8ddf88;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #webcam {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    background: #000;
+  }
+  #model3d {
+    width: 100%;
+    height: 300px;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 1.2rem;
+  }
+  #ai-feedback {
+    width: 100%;
+    height: 150px;
+    background: #f0f4ff;
+    border: 2px solid #007acc;
+    border-radius: 12px;
+    padding: 1rem;
+    overflow-y: auto;
+    color: #003366;
+    font-size: 1rem;
+  }
+  @media (max-width: 768px) {
+    main {
+      flex-direction: column;
+    }
+    .left-side, .right-side {
+      min-width: auto;
+      width: 100%;
+    }
+    #model3d {
+      height: 200px;
+    }
+    #ai-feedback {
+      height: 120px;
+    }
+    .module-3d{
+        position: absolute;
+        top: 0;
+        right: 20%;
+        zoom: 25%;
+
+    }
+  }
+</style>
+</head>
+<body>
+      <div id="3d-container">  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      </div>
+<header>Exercise Posture Analysis</header>
+<main>
+  <section class="left-side">
+    <div class="box">
+      <video id="webcam" autoplay playsinline></video>
+      <p style="margin-top: 0.5rem; text-align: center; color: #007acc; font-weight: 600;">Your Webcam Feed</p>
+    </div>
+  </section>
+  <section class="right-side">
+    <div id="model3d" class="box">
+      <!-- Placeholder for 3D model module -->
+    <spline-viewer class="module-3d" url="https://prod.spline.design/27SM6xmoEt6WYzOF/scene.splinecode"></spline-viewer>
+    </div>
+    <div id="ai-feedback" class="box" aria-live="polite" aria-atomic="true">
+      <!-- Placeholder for AI module speech and posture text -->
+      AI Module Speech and Posture Feedback will appear here.
+    </div>
+  </section>
+</main>
+<script>
+  // JavaScript to access webcam and display feed
+  async function setupWebcam() {
+    const video = document.getElementById('webcam');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = stream;
+    } catch (err) {
+      console.error('Error accessing webcam:', err);
+      const container = video.parentElement;
+      container.innerHTML = '<p style="color: red; text-align: center;">Unable to access webcam. Please allow camera permissions.</p>';
+    }
+  }
+  window.addEventListener('load', setupWebcam);
+</script>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.92/build/spline-viewer.js"></script>
+</body>
+</html>

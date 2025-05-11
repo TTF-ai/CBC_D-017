@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Voice Emotion Detection</title>
+</head>
+<body>
+  <h2>Speak and Detect Emotion</h2>
+  <button onclick="startRecording()">🎙️ Start Recording</button>
+  <button onclick="stopRecording()">⏹️ Stop & Predict</button>
+  <p id="result">Emotion: ...</p>
+
+<form id="audioForm" enctype="multipart/form-data">
+  <input type="file" name="audio" id="audioInput" accept="audio/*" />
+  <button type="submit">Submit</button>
+</form>
+
+  <script>
+  document.getElementById('audioForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    const file = document.getElementById('audioInput').files[0];
+    if (!file) {
+      alert('Please select an audio file.');
+      return;
+    }
+
+    formData.append('audio', file);
+
+    fetch('/predict-audio/', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert("Predicted Emotion: " + data.emotion);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert('Error predicting emotion');
+      });
+  });
+</script>
+</body>
+</html>

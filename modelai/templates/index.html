@@ -1,0 +1,225 @@
+{% url 'header.html' %}
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exercise Posture Analysis</title>
+<style>
+  /* Embedded CSS for layout and styling */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #e6f0fa;
+    color: #1a1a2e;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #cce0ffcc;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px #5a8ddf88;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #007acc;
+  }
+  main {
+    flex-grow: 1;
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .left-side, .right-side {
+    background: #cce0ff;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #5a8ddf88;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .left-side {
+    flex: 1;
+    min-width: 300px;
+  }
+  .right-side {
+    flex: 1;
+    min-width: 300px;
+  }
+  .box {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #5a8ddf88;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #webcam {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    background: #000;
+  }
+  #model3d {
+    width: 100%;
+    height: 300px;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 1.2rem;
+  }
+  #ai-feedback {
+    width: 100%;
+    height: 150px;
+    background: #f0f4ff;
+    border: 2px solid #007acc;
+    border-radius: 12px;
+    padding: 1rem;
+    overflow-y: auto;
+    color: #003366;
+    font-size: 1rem;
+  }
+  @media (max-width: 768px) {
+    main {
+      flex-direction: column;
+    }
+    .left-side, .right-side {
+      min-width: auto;
+      width: 100%;
+    }
+    #model3d {
+      height: 200px;
+    }
+    #ai-feedback {
+      height: 120px;
+    }
+    .module-3d{
+        position: absolute;
+        top: 0;
+        right: 20%;
+        zoom: 25%;
+
+    }
+  }
+</style>
+</head>
+<body>
+      <div id="3d-container">  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      </div>
+<header>Exercise Posture Analysis</header>
+<main>
+  <section class="left-side">
+    <div class="box">
+      <video id="webcam" autoplay playsinline></video>
+      <p style="margin-top: 0.5rem; text-align: center; color: #007acc; font-weight: 600;">Your Webcam Feed</p>
+    </div>
+  </section>
+  <section class="right-side">
+    <div id="model3d" class="box">
+      <h3>Exercise Instructions (3D Model)</h3>
+      <spline-viewer class="module-3d" url="https://prod.spline.design/27SM6xmoEt6WYzOF/scene.splinecode"></spline-viewer>
+    </div>
+    <div id="ai-feedback" class="box" aria-live="polite" aria-atomic="true">
+      <h3>User Workout Feedback</h3>
+      <p>Perform the exercise following the 3D model. Feedback will appear here.</p>
+    </div>
+  </section>
+</main>
+<script>
+  // JavaScript to access webcam and display feed
+  async function setupWebcam() {
+    const video = document.getElementById('webcam');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      video.srcObject = stream;
+    } catch (err) {
+      console.error('Error accessing webcam:', err);
+      const container = video.parentElement;
+      container.innerHTML = '<p style="color: red; text-align: center;">Unable to access webcam. Please allow camera permissions.</p>';
+    }
+  }
+
+  // Function to convert video frame to base64 image
+  function captureFrame(video) {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg');
+  }
+
+  // Function to send frame to backend and update feedback
+  async function sendFrame(frame, state) {
+    try {
+      const response = await fetch('api/frame/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          image: frame,
+          mode: state.mode,
+          squat_count: state.squat_count,
+          squat_stage: state.squat_stage,
+          last_finger_trigger: state.last_finger_trigger,
+          both_thumbs_up_detected: state.both_thumbs_up_detected
+        })
+      });
+      const data = await response.json();
+      if (data.error) {
+        console.error('Error from server:', data.error);
+        return state;
+      }
+      // Update AI feedback
+      const feedbackDiv = document.getElementById('ai-feedback');
+      feedbackDiv.innerHTML = data.messages.map(msg => `<p>${msg}</p>`).join('');
+      // Update state
+      return {
+        mode: data.mode,
+        squat_count: data.squat_count,
+        squat_stage: data.squat_stage,
+        last_finger_trigger: data.last_finger_trigger,
+        both_thumbs_up_detected: data.both_thumbs_up_detected
+      };
+    } catch (err) {
+      console.error('Error sending frame:', err);
+      return state;
+    }
+  }
+
+  async function processWebcam() {
+    const video = document.getElementById('webcam');
+    let state = {
+      mode: 'menu',
+      squat_count: 0,
+      squat_stage: null,
+      last_finger_trigger: -1,
+      both_thumbs_up_detected: false
+    };
+    while (true) {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        const frame = captureFrame(video);
+        state = await sendFrame(frame, state);
+      }
+      await new Promise(resolve => setTimeout(resolve, 200)); // 5 fps
+    }
+  }
+
+  window.addEventListener('load', async () => {
+    await setupWebcam();
+    processWebcam();
+  });
+</script>
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.92/build/spline-viewer.js"></script>
+</body>
+</html>

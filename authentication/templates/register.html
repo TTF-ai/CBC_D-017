@@ -1,0 +1,56 @@
+{% include 'css&js.html' %}
+{% include 'header.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register - Mental Health & Wellbeing</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+    <main class="main-content">
+        <section class="container" style="max-width: 400px; text-align: center;">
+            <h2>Create an Account</h2>
+            <p style="color: #a3be8c; font-weight: 600;">Join us on your journey toward better mental health.</p>
+
+            <form id="register-form">
+                <div style="margin-bottom: 1rem;">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required />
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required />
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Create a password" required />
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="confirm-password">Confirm Password:</label>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required />
+                </div>
+                <button type="submit">Register</button>
+            </form>
+
+            <div style="margin-top: 1.5rem;">
+                <p>Or sign up with:</p>
+                <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                    <button class="social-login-btn" id="google-register">Google</button>
+                    <button class="social-login-btn" id="facebook-register">Facebook</button>
+                    <button class="social-login-btn" id="apple-register">Apple</button>
+                </div>
+            </div>
+
+            <p style="margin-top: 1rem;">
+                Already have an account? <a href="{% url 'login' %}">Login here</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Mental Health & Wellbeing</p>
+    </footer>
+</body>
+</html>

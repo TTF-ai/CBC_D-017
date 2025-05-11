@@ -1,0 +1,50 @@
+{% include 'css&js.html' %}
+{% include 'header.html' %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Mental Health & Wellbeing</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+    <main class="main-content">
+        <section class="container" style="max-width: 400px; text-align: center;">
+            <h2>Login to Your Account</h2>
+            <p style="color: #a3be8c; font-weight: 600;">Feel safe and hopeful. We're here to support your mental wellbeing.</p>
+
+            <form id="login-form">
+                <div style="margin-bottom: 1rem;">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required />
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required />
+                </div>
+                <button type="submit">Login</button>
+            </form>
+
+            <div style="margin-top: 1.5rem;">
+                <p>Or login with:</p>
+                <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                    <button class="social-login-btn" id="google-login">Google</button>
+                    <button class="social-login-btn" id="facebook-login">Facebook</button>
+                    <button class="social-login-btn" id="apple-login">Apple</button>
+                </div>
+            </div>
+
+            <p style="margin-top: 1rem;">
+                Don't have an account? <a href="{% url 'register' %}">Register here</a>
+            </p>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Mental Health & Wellbeing</p>
+    </footer>
+</body>
+
+</html>
+
